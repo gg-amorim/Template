@@ -73,7 +73,7 @@ public sealed class ApplicationDbContext(
         {
             // 1. Verifica se a entidade herda de Entity (Soft Delete)
             bool isBaseEntity = typeof(Entity).IsAssignableFrom(entityType.ClrType);
-            // 2. Verifica se a entidade implementa IOwnedEntity (Multi-tenancy)
+            // 2. Verifica se a entidade implementa OwnedEntity (Multi-tenancy)
             bool isOwnedEntity = typeof(OwnedEntity).IsAssignableFrom(entityType.ClrType);
 
             if (!isBaseEntity && !isOwnedEntity)
@@ -89,13 +89,18 @@ public sealed class ApplicationDbContext(
                 combinedExpression = Expression.Equal(prop, Expression.Constant(false));
             }
 
-            // Filtro de Owner (UserId == CurrentUserId)
             if (isOwnedEntity)
             {
                 MemberExpression userProp = Expression.Property(parameter, nameof(OwnedEntity.UserId));
-                // Acessa a propriedade CurrentUserId do seu DbContext atual
+
+                // Acessa a propriedade do DbContext
                 MemberExpression currentUserIdProp = Expression.Property(Expression.Constant(this), nameof(CurrentUserId));
-                BinaryExpression userIdFilter = Expression.Equal(userProp, currentUserIdProp);
+
+                // CORREÇÃO: Converte o CurrentUserId para o tipo exato da propriedade da entidade (Guid)
+                UnaryExpression convertedCurrentUserId = Expression.Convert(currentUserIdProp, userProp.Type);
+
+                // Agora a comparação funciona
+                BinaryExpression userIdFilter = Expression.Equal(userProp, convertedCurrentUserId);
 
                 combinedExpression = combinedExpression == null
                     ? userIdFilter

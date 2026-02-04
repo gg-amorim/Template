@@ -21,6 +21,4 @@ public sealed class ShoppingListItem : OwnedEntity
 
     // Opcional: Referência ao ingrediente original (se ainda existir)
     public Guid? OriginalIngredientId { get; set; }
-
-    public Guid UserId { get; set; }
 }
