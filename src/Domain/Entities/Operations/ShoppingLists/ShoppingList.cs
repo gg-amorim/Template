@@ -6,7 +6,7 @@ using SharedKernel;
 
 namespace Domain.Entities.Operations.ShoppingLists;
 
-public sealed class ShoppingList : Entity
+public sealed class ShoppingList : OwnedEntity
 {
     public Guid EventId { get; set; }
     public Event Event { get; set; } = null!;
@@ -14,6 +14,4 @@ public sealed class ShoppingList : Entity
     public bool IsCompleted { get; set; } // Se já comprou tudo
 
     public ICollection<ShoppingListItem> Items { get; set; } = new List<ShoppingListItem>();
-
-    public Guid UserId { get; set; }
 }

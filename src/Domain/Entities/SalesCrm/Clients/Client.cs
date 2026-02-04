@@ -3,7 +3,7 @@ using SharedKernel;
 
 namespace Domain.Entities.SalesCrm.Clients;
 
-public sealed class Client : Entity
+public sealed class Client : OwnedEntity
 {
     public string Name { get; set; }
     public string? Phone { get; set; }

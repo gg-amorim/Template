@@ -8,7 +8,7 @@ using SharedKernel;
 
 namespace Domain.Entities.SalesCrm.Events;
 
-public sealed class Event : Entity
+public sealed class Event : OwnedEntity
 {
     public string Name { get; set; } // Ex: "Aniversário da Ana"
     public DateTime EventDate { get; set; }
@@ -30,6 +30,4 @@ public sealed class Event : Entity
 
     // Navegação para a lista de compras gerada
     public ShoppingList? ShoppingList { get; set; }
-
-    public Guid UserId { get; set; } // Dono do evento (usuário do sistema)
 }

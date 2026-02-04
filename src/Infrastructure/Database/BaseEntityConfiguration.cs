@@ -12,13 +12,28 @@ internal abstract class BaseEntityConfiguration<TEntity> : IEntityTypeConfigurat
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        // Garante que o ID não seja gerado pelo Banco (já que você usa UUID v7 no código)
+        // Configuração de Identidade
         builder.Property(e => e.Id)
                .ValueGeneratedNever();
 
-        // Automaticamente filtra registros onde IsDeleted == false em todas as queries
-        builder.HasQueryFilter(e => !e.IsDeleted);
-
+        // Ignora eventos de domínio para não mapear para o banco
         builder.Ignore(e => e.DomainEvents);
+    }
+}
+
+internal abstract class OwnedEntityConfiguration<TEntity> : BaseEntityConfiguration<TEntity>
+    where TEntity : OwnedEntity
+{
+    public override void Configure(EntityTypeBuilder<TEntity> builder)
+    {
+        // Executa a configuração da base (Id e DomainEvents)
+        base.Configure(builder);
+
+        builder.Property(e => e.UserId)
+               .IsRequired();
+
+        // PERFORMANCE: Criamos um índice que ajuda o filtro global.
+        // Como o filtro usa UserId e IsDeleted, um índice composto é o ideal.
+        builder.HasIndex(e => new { e.UserId, e.IsDeleted });
     }
 }

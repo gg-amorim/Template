@@ -5,7 +5,7 @@ using SharedKernel;
 
 namespace Domain.Entities.Operations.ShoppingLists;
 
-public sealed class ShoppingListItem : Entity
+public sealed class ShoppingListItem : OwnedEntity
 {
     public Guid ShoppingListId { get; set; }
     public ShoppingList ShoppingList { get; set; } = null!;
