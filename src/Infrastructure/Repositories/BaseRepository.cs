@@ -9,35 +9,39 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories;
 
-public  class BaseRepository<T>(ApplicationDbContext context, IDateTimeProvider timeProvider) : IBaseRepository<T> where T : Entity
+public class BaseRepository<T>(ApplicationDbContext context, IDateTimeProvider timeProvider) : IBaseRepository<T> where T : Entity
 {
+    protected readonly ApplicationDbContext Context = context;
+    protected readonly IDateTimeProvider TimeProvider = timeProvider;
     public async Task CreateAsync(T entity)
     {
-        entity.Init(timeProvider.UtcNow);
-        await context.AddAsync(entity);
+        entity.Init(TimeProvider.UtcNow);
+        await Context.AddAsync(entity);
     }
     public async Task UpdateAsync(T entity)
     {
-        entity.Touch(timeProvider.UtcNow);
-        context.Update(entity);
+        entity.Touch(TimeProvider.UtcNow);
+        Context.Update(entity);
         await Task.CompletedTask;
     }
     public async Task DeleteAsync(T entity)
     {
-        entity.MarkAsDeleted(timeProvider.UtcNow);
-        context.Update(entity);
+        entity.MarkAsDeleted(TimeProvider.UtcNow);
+        Context.Update(entity);
         await Task.CompletedTask;
     }
 
-    public async Task<IQueryable<T>> GetAll()
+    public async Task<List<T>> GetAll(CancellationToken cancellationToken, bool onlyRead = true)
     {
-        return context.Set<T>().AsQueryable();
+        IQueryable<T> query = onlyRead ? Context.Set<T>().AsNoTracking() : Context.Set<T>();
+        return await query.ToListAsync(cancellationToken);
     }
 
     public async Task<T> GetById(Guid id, CancellationToken cancellationToken)
     {
-        return await context.Set<T>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        return await Context.Set<T>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    
+
 }

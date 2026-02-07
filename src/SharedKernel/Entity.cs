@@ -41,10 +41,9 @@ public abstract class Entity
         DeletedAt = date;
     }
 
-    public void MarkAsInactive(DateTime date)
+    public void MarkAsInactive()
     {
         IsInactive = true;
-        UpdatedAt = date;
     }
 
     public void MarkAsActive(DateTime date)
