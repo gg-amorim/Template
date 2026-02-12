@@ -4,7 +4,7 @@ namespace Domain.Abstractions;
 
 public interface IBaseRepository<T> where T : Entity
 {
-    Task CreateAsync(T entity);
+    Task CreateAsync(T entity, CancellationToken cancellationToken);
     Task UpdateAsync(T entity);
     Task DeleteAsync(T entity);
     Task<T> GetById(Guid id, CancellationToken cancellationToken);

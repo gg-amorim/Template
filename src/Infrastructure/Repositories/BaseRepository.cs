@@ -13,10 +13,10 @@ public class BaseRepository<T>(ApplicationDbContext context, IDateTimeProvider t
 {
     protected readonly ApplicationDbContext Context = context;
     protected readonly IDateTimeProvider TimeProvider = timeProvider;
-    public async Task CreateAsync(T entity)
+    public async Task CreateAsync(T entity, CancellationToken cancellationToken)
     {
         entity.Init(TimeProvider.UtcNow);
-        await Context.AddAsync(entity);
+        await Context.AddAsync(entity, cancellationToken);
     }
     public async Task UpdateAsync(T entity)
     {

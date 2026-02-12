@@ -15,11 +15,10 @@ internal sealed class Create : IEndpoint
     public void MapEndpoint(IEndpointRouteBuilder app)
     {
         app.MapPost("v1/ingredients", async (
-            Request request,
-            ICommandHandler<CreateIngredientCommand, Guid> handler,
+            [FromBody]CreateIngredientCommand command,
+            [FromServices]ICommandHandler<CreateIngredientCommand, Guid> handler,
             CancellationToken cancellationToken) =>
         {
-            var command = new CreateIngredientCommand(request.Name, request.Unit, request.CostPrice);
 
             Result<Guid> result = await handler.Handle(command, cancellationToken);
 

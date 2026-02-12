@@ -14,6 +14,11 @@ namespace Infrastructure.Repositories.Kitchen.Ingredients;
 
 internal sealed class IngredientRepository(ApplicationDbContext context, IDateTimeProvider timeProvider) : BaseRepository<Ingredient>(context, timeProvider), IIngredientRepository
 {
+    public async Task<int> CountByIdsAsync(List<Guid> ids, CancellationToken cancellationToken)
+    {
+        return await Context.Ingredients.CountAsync(x => ids.Contains(x.Id), cancellationToken);
+    }
+
     public async Task<List<Ingredient>> GetAllWithDetailsAsync(bool? isInactive, CancellationToken cancellationToken)
     {
         return await Context.Ingredients.Where(x => isInactive == null || x.IsInactive == isInactive).ToListAsync(cancellationToken);
